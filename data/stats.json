@@ -1,0 +1,86 @@
+{
+ "states_50": {
+  "n": 50,
+  "min": 576851,
+  "max": 39538223,
+  "mean": 6615194.7,
+  "median": 4581796.5,
+  "stdev": 7361406.2,
+  "sum": 330759736,
+  "max_min_ratio": 68.54
+ },
+ "states_56_incl_DC_PR_IA": {
+  "n": 56,
+  "min": 47329,
+  "max": 39538223,
+  "mean": 5983449.6,
+  "median": 3782648.5,
+  "stdev": 7201153.3,
+  "sum": 335073176,
+  "max_min_ratio": 835.39
+ },
+ "districts_voting_435": {
+  "n": 435,
+  "min": 542112,
+  "max": 989948,
+  "mean": 760367.2,
+  "median": 766987,
+  "stdev": 37876.7,
+  "sum": 330759736,
+  "max_min_ratio": 1.83
+ },
+ "districts_all_441": {
+  "n": 441,
+  "min": 47329,
+  "max": 3285874,
+  "mean": 759803.1,
+  "median": 766987,
+  "stdev": 141595.2,
+  "sum": 335073176,
+  "max_min_ratio": 69.43
+ },
+ "state_min": "Commonwealth of the Northern Mariana Islands",
+ "state_max": "California",
+ "district_voting_min": {
+  "geoid": "3001",
+  "state_fp": "30",
+  "state": "MT",
+  "cd": "01",
+  "name": "Congressional District 1",
+  "is_delegate": 0,
+  "is_at_large": 0,
+  "population": 542112,
+  "population_ideal": 542112,
+  "population_source": "2020 Census CD119 P1",
+  "aland_sqkm": 104033.84,
+  "awater_sqkm": 1580.29,
+  "centroid_lon": -113.4867,
+  "centroid_lat": 46.91409
+ },
+ "district_voting_max": {
+  "geoid": "1000",
+  "state_fp": "10",
+  "state": "DE",
+  "cd": "00",
+  "name": "Congressional District (at Large)",
+  "is_delegate": 0,
+  "is_at_large": 1,
+  "population": 989948,
+  "population_ideal": 989948,
+  "population_source": "2020 Census CD119 P1",
+  "aland_sqkm": 5046.69,
+  "awater_sqkm": 1399.22,
+  "centroid_lon": -75.49917,
+  "centroid_lat": 38.98979
+ },
+ "district_ideal_vs_actual_max_abs_diff": 21897,
+ "state_50_min": [
+  "Wyoming",
+  576851
+ ],
+ "state_50_max": [
+  "California",
+  39538223
+ ],
+ "state_50_max_min_ratio": 68.5
+}

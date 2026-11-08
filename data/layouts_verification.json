@@ -1,0 +1,50 @@
+{
+ "view": [
+  960.0,
+  600.0
+ ],
+ "gap_units": 2.0,
+ "total_area_fraction": 0.32,
+ "km_per_unit": 5.0152,
+ "scale_view_units_per_km": 0.19939,
+ "side_c": 0.023606,
+ "side_min_max": [
+  17.93,
+  148.44
+ ],
+ "true_overlaps_gap0": 0,
+ "max_overlap_area_sq_units": 0.0,
+ "max_overlap_pair": null,
+ "gap_violations": 0,
+ "displacement_km_conus": {
+  "mean": 83.5,
+  "median": 45.5,
+  "max": 482.5,
+  "max_state": "NY"
+ },
+ "displacement_units_ak": 0.0,
+ "displacement_units_hi": 0.0,
+ "ordering_ew_preserved": [
+  1210,
+  1225,
+  0.9878
+ ],
+ "ordering_ns_preserved": [
+  1172,
+  1225,
+  0.9567
+ ],
+ "cartographic_error_by_construction": 5.836758208690297e-16,
+ "tilegrid": {
+  "n_states": 50,
+  "unique_cells": 50,
+  "cols": [
+   0,
+   11
+  ],
+  "rows": [
+   0,
+   8
+  ]
+ }
+}

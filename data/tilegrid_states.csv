@@ -1,0 +1,51 @@
+state,abbr,name,population,grid_col,grid_row
+AK,AK,Alaska,733391,0,0
+AL,AL,Alabama,5024279,7,6
+AR,AR,Arkansas,3011524,6,5
+AZ,AZ,Arizona,7151502,3,5
+CA,CA,California,39538223,2,5
+CO,CO,Colorado,5773714,3,4
+CT,CT,Connecticut,3605944,11,3
+DE,DE,Delaware,989948,9,4
+FL,FL,Florida,21538187,8,8
+GA,GA,Georgia,10711908,8,7
+HI,HI,Hawaii,1455271,0,8
+IA,IA,Iowa,3190369,5,3
+ID,ID,Idaho,1839106,2,3
+IL,IL,Illinois,12812508,6,3
+IN,IN,Indiana,6785528,7,3
+KS,KS,Kansas,2937880,5,5
+KY,KY,Kentucky,4505836,6,4
+LA,LA,Louisiana,4657757,5,6
+MA,MA,Massachusetts,7029917,10,2
+MD,MD,Maryland,6177224,8,4
+ME,ME,Maine,1362359,11,0
+MI,MI,Michigan,10077331,7,2
+MN,MN,Minnesota,5706494,4,2
+MO,MO,Missouri,6154913,5,4
+MS,MS,Mississippi,2961279,6,6
+MT,MT,Montana,1084225,2,2
+NC,NC,North Carolina,10439388,9,5
+ND,ND,North Dakota,779094,3,2
+NE,NE,Nebraska,1961504,4,4
+NH,NH,New Hampshire,1377529,11,1
+NJ,NJ,New Jersey,9288994,10,3
+NM,NM,New Mexico,2117522,3,6
+NV,NV,Nevada,3104614,2,4
+NY,NY,New York,20201249,9,2
+OH,OH,Ohio,11799448,8,3
+OK,OK,Oklahoma,3959353,4,6
+OR,OR,Oregon,4237256,1,4
+PA,PA,Pennsylvania,13002700,9,3
+RI,RI,Rhode Island,1097379,11,2
+SC,SC,South Carolina,5118425,8,6
+SD,SD,South Dakota,886667,4,3
+TN,TN,Tennessee,6910840,7,5
+TX,TX,Texas,29145505,4,7
+UT,UT,Utah,3271616,4,5
+VA,VA,Virginia,8631393,8,5
+VT,VT,Vermont,643077,10,1
+WA,WA,Washington,7705281,1,2
+WI,WI,Wisconsin,5893718,5,2
+WV,WV,West Virginia,1793716,7,4
+WY,WY,Wyoming,576851,3,3
