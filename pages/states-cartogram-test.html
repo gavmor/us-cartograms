@@ -231,7 +231,8 @@
 
       var COLOR = {
         field: "population", type: "quantitative",
-        scale: { type: "log", domain: [576851, 39538223], scheme: "yelloworangered" }
+        scale: { type: "log", domain: [576851, 39538223],
+                 range: ["#e6f2cf", "#b9e29b", "#7cc47f", "#c9c44a", "#edb93c", "#f08a24", "#dd6a0c"] }
       };
 
       function hoverParam() {
@@ -276,14 +277,14 @@
         ],
         projection: { type: "albersUsa" },
         params: hoverParam(),
-        mark: { type: "geoshape", stroke: MAP_STROKE, strokeWidth: 0.7 },
+        mark: { type: "geoshape", stroke: MAP_STROKE, strokeWidth: 0.4 },
         encoding: {
           color: Object.assign({}, COLOR, {
             legend: { title: "Population (log scale)", format: "~s" }
           }),
           opacity: OPACITY,
           stroke: { condition: { param: "hover", empty: false, value: HI_STROKE }, value: MAP_STROKE },
-          strokeWidth: { condition: { param: "hover", empty: false, value: 2 }, value: 0.7 },
+          strokeWidth: { condition: { param: "hover", empty: false, value: 1.5 }, value: 0.4 },
           tooltip: TOOLTIP
         },
         config: BASE_CONFIG
@@ -297,7 +298,7 @@
           {
             data: { values: DATA.demers },
             params: hoverParam(),
-            mark: { type: "rect", stroke: MAP_STROKE, strokeWidth: 0.6 },
+            mark: { type: "rect", stroke: MAP_STROKE, strokeWidth: 0.35 },
             encoding: {
               x: { field: "x0", type: "quantitative", scale: { domain: [0, 960] }, axis: null },
               x2: { field: "x1" },
@@ -306,7 +307,7 @@
               color: Object.assign({}, COLOR, { legend: null }),
               opacity: OPACITY,
               stroke: { condition: { param: "hover", empty: false, value: HI_STROKE }, value: MAP_STROKE },
-              strokeWidth: { condition: { param: "hover", empty: false, value: 2 }, value: 0.6 },
+              strokeWidth: { condition: { param: "hover", empty: false, value: 1.5 }, value: 0.35 },
               tooltip: TOOLTIP
             }
           },
@@ -334,7 +335,7 @@
           {
             data: { values: DATA.tiles },
             params: hoverParam(),
-            mark: { type: "rect", stroke: MAP_STROKE, strokeWidth: 0.6 },
+            mark: { type: "rect", stroke: MAP_STROKE, strokeWidth: 0.35 },
             encoding: {
               x: { field: "x0", type: "quantitative", scale: { domain: [0, 12] }, axis: null },
               x2: { field: "x1" },
@@ -343,7 +344,7 @@
               color: Object.assign({}, COLOR, { legend: null }),
               opacity: OPACITY,
               stroke: { condition: { param: "hover", empty: false, value: HI_STROKE }, value: MAP_STROKE },
-              strokeWidth: { condition: { param: "hover", empty: false, value: 2 }, value: 0.6 },
+              strokeWidth: { condition: { param: "hover", empty: false, value: 1.5 }, value: 0.35 },
               tooltip: TOOLTIP
             }
           },
@@ -385,7 +386,7 @@
           var rect = document.createElementNS(NS, "rect");
           rect.setAttribute("x", x); rect.setAttribute("y", maxH - s);
           rect.setAttribute("width", s); rect.setAttribute("height", s);
-          rect.setAttribute("fill", "#d95f26"); rect.setAttribute("fill-opacity", "0.85");
+          rect.setAttribute("fill", "#dd6a0c"); rect.setAttribute("fill-opacity", "0.85");
           rect.setAttribute("stroke", HI_STROKE); rect.setAttribute("stroke-opacity", "0.25");
           svg.appendChild(rect);
           var t = document.createElementNS(NS, "text");

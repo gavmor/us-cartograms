@@ -13,8 +13,8 @@
   :root{
     --bg:#f7f5f0; --surface:#fffefa; --surface-2:#efece4;
     --ink:#1c1a15; --muted:#6b665a; --faint:#9a9587;
-    --line:#ddd8cb; --line-strong:#c9c3b2;
-    --accent:#b45309; --accent-ink:#92400e;
+    --line:#e9e5da; --line-strong:#ddd7c8;
+    --accent:#c2610a; --accent-ink:#9a4d08;
     --chart-bg:#fffefa;
     --code-bg:#1c1a15; --code-ink:#f3efe4;
     --radius:14px;
@@ -23,7 +23,7 @@
     :root{
       --bg:#131311; --surface:#1c1b18; --surface-2:#24231f;
       --ink:#ece8dc; --muted:#a8a294; --faint:#7d786b;
-      --line:#33312a; --line-strong:#454238;
+      --line:#262520; --line-strong:#33322b;
       --accent:#f0a832; --accent-ink:#f5bc55;
       --chart-bg:#1c1b18;
       --code-bg:#0c0c0b; --code-ink:#ece8dc;
@@ -38,7 +38,7 @@
   }
   .wrap{max-width:1120px; margin:0 auto; padding:28px 20px 56px}
   /* header */
-  header{padding:10px 0 22px; border-bottom:2px solid var(--ink); margin-bottom:22px}
+  header{padding:10px 0 22px; border-bottom:1px solid var(--line); margin-bottom:22px}
   .meta-row{display:flex; flex-wrap:wrap; gap:8px 18px; font-size:12.5px; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:14px}
   .meta-row span{display:inline-flex; align-items:center; gap:7px}
   .dot{width:7px; height:7px; border-radius:50%; background:var(--accent); display:inline-block}
@@ -92,12 +92,20 @@
   a{color:var(--accent-ink)}
   @media (max-width:720px){
     .wrap{padding:20px 14px 44px}
-    .stats{grid-template-columns:repeat(2, 1fr)}
-    .stat:nth-child(2){border-right:none}
-    .stat:nth-child(1), .stat:nth-child(2){border-bottom:1px solid var(--line)}
-    .digits{grid-template-columns:1fr}
+    header{border-bottom:none; padding-bottom:16px; margin-bottom:16px}
+    /* Borders recede on small screens: separation comes from surface
+       tint and spacing, not outlines. */
+    .stats{grid-template-columns:repeat(2, 1fr); border:none; background:transparent; gap:8px; overflow:visible}
+    .stat{background:var(--surface); border-radius:10px; padding:14px 14px 12px}
+    .stat, .stat:nth-child(2){border-right:none}
+    .stat:nth-child(1), .stat:nth-child(2){border-bottom:none}
+    .chart-card{border:none; padding:6px 0 2px; background:transparent; border-radius:0}
+    .chart-head{padding-left:2px; padding-right:2px}
+    .chart-foot{border-top:none; padding-left:2px; padding-right:2px}
+    .digits{grid-template-columns:1fr; gap:8px}
+    .digit-row{border:none; background:var(--surface)}
     .cols{grid-template-columns:1fr}
-    .chart-card{padding:6px 2px 2px}
+    footer{border-top:none}
   }
 </style>
 </head>
@@ -198,8 +206,10 @@
 
 <script>
 (function(){
-  // Category10 — Vega-Lite's default nominal scheme, in digit order 0–9.
-  var COLORS = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"];
+  // Green-to-orange ramp, in digit order 0–9: deep green in the
+  // Northeast (0) warming through gold to burnt orange on the
+  // Pacific (9). No blues, no reds.
+  var COLORS = ["#1b7837","#2d9e44","#5bb450","#8fc95e","#c2d94e","#e8c832","#f0a81e","#eb7f16","#d95e10","#bf430c"];
   var REGIONS = [
     {d:"0", n:"3,256", label:"Northeast & Caribbean", text:"CT, MA, ME, NH, NJ, NY (east), RI, VT — plus Puerto Rico and the US Virgin Islands."},
     {d:"1", n:"4,548", label:"Mid-Atlantic", text:"Delaware, New York (rest of state) and Pennsylvania."},

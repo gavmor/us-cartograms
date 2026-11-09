@@ -21,8 +21,8 @@
         --muted: #59616c;
         --faint: #878e99;
         --line: #dcdad0;
-        --accent: #b3541e;
-        --accent-soft: #f7e8df;
+        --accent: #c75b10;
+        --accent-soft: #fbeadb;
         --good: #1c7a44;
         --bad: #b3372c;
         --code-bg: #171a1e;
@@ -38,8 +38,8 @@
           --muted: #a3abb6;
           --faint: #767f8b;
           --line: #2e333b;
-          --accent: #e07f3e;
-          --accent-soft: #33241a;
+          --accent: #f0933e;
+          --accent-soft: #362612;
           --good: #4cc07a;
           --bad: #e07a6d;
           --code-bg: #0c0e10;
@@ -330,6 +330,8 @@ const result = GoCart.makeCartogram(geojson5070, 'population');</pre>
         'use strict';
         var TOTAL_POP = 330759736;
         var POP_DOMAIN = [576851, 39538223];
+        // Green (low population) through yellow to orange (high population).
+        var POP_RANGE = ['#edf7e1', '#c9ecae', '#8fd694', '#58b368', '#e8c547', '#f08a2e', '#d95f0e'];
 
         var stateTable = {};       // abbr -> enriched properties
         var referenceData = null;  // lon/lat, true positions
@@ -354,8 +356,8 @@ const result = GoCart.makeCartogram(geojson5070, 'population');</pre>
           return {
             dark: dark,
             label: dark ? '#c9cfd8' : '#3d454f',
-            border: dark ? '#121417' : '#ffffff',
-            highlight: dark ? '#ffb066' : '#b3541e',
+            border: dark ? 'rgba(18, 20, 23, 0.45)' : 'rgba(255, 255, 255, 0.55)',
+            highlight: dark ? '#8ff0a4' : '#166534',
             legendInk: dark ? '#e8ebef' : '#23272d'
           };
         }
@@ -370,11 +372,12 @@ const result = GoCart.makeCartogram(geojson5070, 'population');</pre>
           ];
         }
 
-        function stateEncoding(t, withLegend) {
+        function stateEncoding(t, withLegend, w) {
+          var narrow = w && w < 430;
           var enc = {
             color: {
               field: 'properties.population', type: 'quantitative',
-              scale: { type: 'log', domain: POP_DOMAIN, scheme: 'blues' },
+              scale: { type: 'log', domain: POP_DOMAIN, range: POP_RANGE },
               legend: withLegend ? {
                 title: 'Population (2020)', format: '~s', orient: 'bottom',
                 direction: 'horizontal', titleAnchor: 'start', gradientLength: 170,
@@ -386,8 +389,8 @@ const result = GoCart.makeCartogram(geojson5070, 'population');</pre>
               value: t.border
             },
             strokeWidth: {
-              condition: { test: 'hoverAbbr === datum.abbr', value: 2.4 },
-              value: 0.5
+              condition: { test: 'hoverAbbr === datum.abbr', value: narrow ? 1.4 : 1.8 },
+              value: narrow ? 0.2 : 0.3
             },
             opacity: {
               condition: { test: 'hoverAbbr !== null && hoverAbbr !== datum.abbr', value: 0.45 },
@@ -448,11 +451,11 @@ const result = GoCart.makeCartogram(geojson5070, 'population');</pre>
                 data: { values: data.features },
                 transform: [{ calculate: 'datum.properties.STUSPS', as: 'abbr' }],
                 mark: { type: 'geoshape', cursor: 'pointer' },
-                encoding: stateEncoding(t, true)
+                encoding: stateEncoding(t, true, w)
               },
               {
                 data: { values: sq.feats },
-                mark: { type: 'geoshape', fill: 'none', stroke: t.legendInk, strokeWidth: 1.1 },
+                mark: { type: 'geoshape', fill: 'none', stroke: t.legendInk, strokeWidth: 0.8 },
                 encoding: {}
               },
               {
@@ -478,7 +481,7 @@ const result = GoCart.makeCartogram(geojson5070, 'population');</pre>
             params: [{ name: 'hoverAbbr', value: null }],
             projection: { type: 'albersUsa' },
             mark: { type: 'geoshape', cursor: 'pointer' },
-            encoding: stateEncoding(t, false)
+            encoding: stateEncoding(t, false, w)
           };
         }
 
