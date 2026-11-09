@@ -1,0 +1,36 @@
+state,state_abbr,seat_class,winner_name,winner_party,winner_pct,runnerup_pct,margin_pts,called,source_url
+Florida,FL,3 special,Ashley Moody,R,50.9,48.0,2.9,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Ohio,OH,3 special,Sherrod Brown,D,50.0,45.2,4.8,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Alabama,AL,2,Barry Moore,R,54.7,45.3,9.4,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Alaska,AK,2,,,,,,no,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Arkansas,AR,2,Tom Cotton,R,54.3,42.4,11.9,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Colorado,CO,2,John Hickenlooper,D,60.4,35.1,25.3,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Delaware,DE,2,Chris Coons,D,63.6,36.4,27.2,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Georgia,GA,2,Jon Ossoff,D,59.0,41.0,18.0,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Idaho,ID,2,Jim Risch,R,56.5,33.5,23.0,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Illinois,IL,2,Juliana Stratton,D,61.3,37.1,24.2,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Iowa,IA,2,Josh Turek,D,50.5,46.4,4.1,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Kansas,KS,2,Adam Hamilton,D,51.0,46.0,5.0,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Kentucky,KY,2,Andy Barr,R,55.0,42.9,12.1,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Louisiana,LA,2,Julia Letlow,R,50.9,49.1,1.8,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Maine,ME,2,Troy Jackson,D,53.1,46.8,6.3,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Massachusetts,MA,2,Ed Markey,D,63.4,32.1,31.3,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Michigan,MI,2,Abdul El-Sayed,D,52.5,45.5,7.0,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Minnesota,MN,2,Peggy Flanagan,D,53.7,43.6,10.1,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Mississippi,MS,2,,,,,,no,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Montana,MT,2,Kurt Alme,R,48.3,37.7,10.6,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Nebraska,NE,2,Pete Ricketts,R,50.1,43.9,6.2,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+New Hampshire,NH,2,Chris Pappas,D,55.9,42.2,13.7,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+New Jersey,NJ,2,Cory Booker,D,62.3,35.1,27.2,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+New Mexico,NM,2,Ben Ray Luján,D,63.3,36.7,26.6,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+North Carolina,NC,2,Roy Cooper,D,58.7,39.1,19.6,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Oklahoma,OK,2,Kevin Hern,R,57.2,39.3,17.9,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Oregon,OR,2,Jeff Merkley,D,58.1,38.7,19.4,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Rhode Island,RI,2,Jack Reed,D,66.8,29.3,37.5,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+South Carolina,SC,2,Annie Andrews,D,51.1,46.6,4.5,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+South Dakota,SD,2,Mike Rounds,R,60.5,39.5,21.0,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Tennessee,TN,2,Bill Hagerty,R,55.1,42.9,12.2,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Texas,TX,2,James Talarico,D,55.1,43.0,12.1,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Virginia,VA,2,Mark Warner,D,61.2,38.5,22.7,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+West Virginia,WV,2,Shelley Moore Capito,R,58.3,37.9,20.4,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections
+Wyoming,WY,2,Harriet Hageman,R,65.2,34.8,30.4,yes,https://en.wikipedia.org/wiki/2026_United_States_Senate_elections

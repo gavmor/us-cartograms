@@ -14,7 +14,7 @@ data, so the trade-offs are visible rather than asserted.
 
 ## The pages
 
-All four are self-contained static pages in [`pages/`](pages/).
+All five are self-contained static pages in [`pages/`](pages/).
 Open one directly in a browser, or serve the repo root and visit it:
 
 ```sh
@@ -33,6 +33,7 @@ offline once loaded, apart from their Vega CDN scripts).
 | [`pages/states-cartogram-test.html`](pages/states-cartogram-test.html) | **US states cartogram test** — the 50 states by 2020 Census population, three ways side by side with linked hovering: undistorted Albers USA reference map, Demers squares (area ∝ population), and an equal-tile grid mosaic (population in colour). Infotips, readout panel, and a square area-to-value legend. |
 | [`pages/states-contiguous-cartogram.html`](pages/states-contiguous-cartogram.html) | **Client-side contiguous diffusion cartogram** — the 50 states by population, computed live in the browser with go-cart-wasm (Gastner–Seguy–More flow-based method) in a Web Worker (~12 s), rendered with Vega-Lite geoshape beside the undistorted reference map. A verified precomputed reference is shown, clearly labelled, while the live run computes and as a toggleable comparison afterwards. |
 | [`pages/districts-cartogram-test.html`](pages/districts-cartogram-test.html) | **Districts cartogram test** — the 435 voting congressional districts (119th Congress) by 2020 Census population, four ways with linked hovering, tile-grid mosaic first: squared-cost tile grid, contiguous diffusion, Demers squares, and the undistorted reference map. The 6 delegate districts are excluded. |
+| [`pages/2026-midterms-cartogram.html`](pages/2026-midterms-cartogram.html) | **2026 midterm results** — governors, Senate, and House by winning party, winners shaded by margin, on the same cartogram layouts (tile-grid / Demers / contiguous) with linked hovering. Snapshot as of Nov 8, 2026 ~16:30 PT; 23 races still uncalled. |
 
 ## Data
 
@@ -230,6 +231,38 @@ Worker, which is the point of that page.
 - All four views render 435 district marks each; hovering one
   district highlights it in all four views (verified headlessly,
   pinned Vega 6.2.0 / Vega-Lite 6.4.0).
+
+### 2026 midterms (`pages/2026-midterms-cartogram.html`)
+
+- **Snapshot as of Nov 8, 2026 ~16:30 PT** (5 days after Election
+  Day, Nov 3, 2026). Sources: Wikipedia's 2026 gubernatorial,
+  Senate, and House election pages, cross-checked against AP call
+  status, Ballotpedia, and Poliwave. Data:
+  [`data/governors_2026.csv`](data/governors_2026.csv) (36 rows),
+  [`data/senate_2026.csv`](data/senate_2026.csv) (35 rows),
+  [`data/house_2026.csv`](data/house_2026.csv) (435 rows); full
+  report: [`docs/elections-2026-readme.md`](docs/elections-2026-readme.md).
+- **Governors, called D 22 / R 12, 2 uncalled** (Alaska,
+  ranked-choice; Kansas, 0.6 pts). Democrats flipped 5 called seats
+  (GA, IA, NV, OH, TX) and hold a governor majority for the first
+  time since 2009. 14 states had no 2026 governor race.
+- **Senate, called D 20 / R 13, 2 uncalled** (Alaska, Mississippi).
+  35 seats were up (33 Class 2 + specials in FL and OH).
+  Democrats flipped 7 (IA, KS, ME, NC, OH special, SC, TX);
+  composition 54–44 with 2 pending.
+- **House, called D 254 / R 162, 19 uncalled — Democrats won
+  control.** Only 2 Republican flips (TN-09, TX-32). Popular vote
+  D 55.7% / R 42.8%. LA-05 and LA-06 go to runoffs on Dec 12.
+  If the leaders in the 19 uncalled races held, the House would
+  finish D 261 / R 174.
+- **Caveats:** uncalled rows carry no winner/party — the
+  percentages on those rows are the current leader/trailer shares
+  of the counted vote, not final margins. House percentages are
+  from AP data republished Nov 5–6, so shares may have moved ~a
+  point since; winners will not have. A few Wikipedia-called races
+  (FL-09, TN-04, ME-02) had not been called by AP and carry genuine
+  recount risk. Alaska is ranked-choice in all three contests;
+  first-choice shares are not final margins.
 
 ## Literature
 
