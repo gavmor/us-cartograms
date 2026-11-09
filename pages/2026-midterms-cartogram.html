@@ -176,6 +176,11 @@
       .legend .sw.nor { background: var(--norace); }
       .legend .lab { font-weight: 600; color: var(--ink); margin-right: 2px; }
       .note { font-size: 13.5px; color: var(--ink-faint); margin: 8px 0 4px; max-width: 82ch; }
+      .caption { font-size: 14px; color: var(--ink-soft); margin: 10px 0 6px; max-width: 82ch; }
+      .caption strong { color: var(--ink); }
+      #lstar-chart { width: 100%; margin: 6px 0 2px; }
+      #lstar-chart .vega-embed { width: 100%; }
+      #lstar-chart canvas, #lstar-chart svg { max-width: 100%; }
 
       #tooltip {
         position: fixed;
@@ -350,6 +355,36 @@
             differed by two or three seats in each chamber. That is caller lag, not an error in
             either.</li>
         </ul>
+      </section>
+
+      <section class="view methods">
+        <p class="viewnum">Methods note</p>
+        <h2>Methods: why this colour scale</h2>
+        <p class="viewsub">The chart below plots the perceptual lightness (CIELAB L*) of every
+          colour in Wikipedia&rsquo;s Presidential palettes (WP:USALEGEND) against the
+          OKLCH-calibrated Fix&nbsp;1 ramps, across all eight vote-share brackets. L* is
+          recomputed from the hex values (sRGB, D65 white point), not taken from any published
+          table. Wikipedia&rsquo;s failures reproduce exactly: the Republican line nearly stops
+          between 60&ndash;70% and 70&ndash;80% (&Delta;L* &minus;1.9, landing on exactly the
+          Democratic L* of 44.2 &mdash; a cross-party gap of 0.0), the light Democratic end is
+          compressed (20&ndash;30% &rarr; 30&ndash;40% steps only &minus;3.0), and at
+          90&ndash;100% the two parties sit just 3.9 L* apart. The Fix&nbsp;1 curves fix the
+          shape instead: even steps of &minus;7.0 to &minus;10.8 per bracket, and nothing below
+          L* 27.5 (the dashed line).</p>
+        <div id="lstar-chart"><p class="chart-wait">Loading the L* trajectory chart&hellip;</p></div>
+        <p class="caption"><strong>Correction.</strong> The Fix&nbsp;1 table this chart was drawn
+          from claims a dark-tail cross-party gap of 5.8 at 90&ndash;100%. Recomputed from the
+          hexes, the gap is <strong>3.0</strong> &mdash; Republican #911108 at L* 30.5 against
+          Democratic #043A97 at L* 27.5. The extremes stay distinguishable by hue and chroma
+          &mdash; deep vermilion against deep cobalt &mdash; not by lightness alone.</p>
+        <p class="caption"><strong>Scope.</strong> The maps on this page use the Fix&nbsp;2
+          five-bin scale, keyed to the winner&rsquo;s vote share &mdash; not the scale drawn
+          here. The chart shows Fix&nbsp;1 (eight brackets) because it preserves
+          Wikipedia&rsquo;s bracket structure, so the curves are directly comparable; do not
+          read the charted colours as the ones on the maps above.</p>
+        <p class="caption"><strong>Not charted.</strong> The Proposal palette does not appear:
+          only its 90&ndash;100% extremes were supplied, so drawing it a curve would be invented
+          data.</p>
       </section>
 
       <footer>
@@ -828,6 +863,127 @@
         var mq = window.matchMedia("(prefers-color-scheme: dark)");
         if (mq.addEventListener) mq.addEventListener("change", render);
       }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.30.0/build/vega.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.21.0/build/vega-lite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.26.0/build/vega-embed.min.js"></script>
+    <script>
+      (function () {
+        var el = document.getElementById("lstar-chart");
+        if (!el || typeof vegaEmbed === "undefined") return;
+        /* All 32 rows of lstar-trajectories.csv (4 series x 8 brackets);
+           L* recomputed from the hexes, sRGB D65. */
+        var LSTAR = [
+          {"bracket":"20-30%","series":"Wikipedia Presidential — Democratic","hex":"#E1EFFF","L_star":93.9},
+          {"bracket":"30-40%","series":"Wikipedia Presidential — Democratic","hex":"#D3E7FF","L_star":90.9},
+          {"bracket":"40-50%","series":"Wikipedia Presidential — Democratic","hex":"#B9D7FF","L_star":85.1},
+          {"bracket":"50-60%","series":"Wikipedia Presidential — Democratic","hex":"#86B6F2","L_star":72.8},
+          {"bracket":"60-70%","series":"Wikipedia Presidential — Democratic","hex":"#4389E3","L_star":56.7},
+          {"bracket":"70-80%","series":"Wikipedia Presidential — Democratic","hex":"#1666CB","L_star":44.2},
+          {"bracket":"80-90%","series":"Wikipedia Presidential — Democratic","hex":"#0645B4","L_star":33.1},
+          {"bracket":"90-100%","series":"Wikipedia Presidential — Democratic","hex":"#002B84","L_star":21.6},
+          {"bracket":"20-30%","series":"Wikipedia Presidential — Republican","hex":"#FFDFE1","L_star":91.4},
+          {"bracket":"30-40%","series":"Wikipedia Presidential — Republican","hex":"#FFCCD0","L_star":86.5},
+          {"bracket":"40-50%","series":"Wikipedia Presidential — Republican","hex":"#F2B3BE","L_star":78.9},
+          {"bracket":"50-60%","series":"Wikipedia Presidential — Republican","hex":"#E27F90","L_star":64.5},
+          {"bracket":"60-70%","series":"Wikipedia Presidential — Republican","hex":"#CC2F4A","L_star":46.1},
+          {"bracket":"70-80%","series":"Wikipedia Presidential — Republican","hex":"#D40000","L_star":44.2},
+          {"bracket":"80-90%","series":"Wikipedia Presidential — Republican","hex":"#AA0000","L_star":35.1},
+          {"bracket":"90-100%","series":"Wikipedia Presidential — Republican","hex":"#800000","L_star":25.5},
+          {"bracket":"20-30%","series":"OKLCH-calibrated (Fix 1) — Democratic","hex":"#D4E8FF","L_star":91.2},
+          {"bracket":"30-40%","series":"OKLCH-calibrated (Fix 1) — Democratic","hex":"#B3D5FF","L_star":84.2},
+          {"bracket":"40-50%","series":"OKLCH-calibrated (Fix 1) — Democratic","hex":"#8EC0FF","L_star":76.5},
+          {"bracket":"50-60%","series":"OKLCH-calibrated (Fix 1) — Democratic","hex":"#66A8FC","L_star":67.9},
+          {"bracket":"60-70%","series":"OKLCH-calibrated (Fix 1) — Democratic","hex":"#3D8DF2","L_star":58.5},
+          {"bracket":"70-80%","series":"OKLCH-calibrated (Fix 1) — Democratic","hex":"#1871DC","L_star":48.5},
+          {"bracket":"80-90%","series":"OKLCH-calibrated (Fix 1) — Democratic","hex":"#0855BE","L_star":38.3},
+          {"bracket":"90-100%","series":"OKLCH-calibrated (Fix 1) — Democratic","hex":"#043A97","L_star":27.5},
+          {"bracket":"20-30%","series":"OKLCH-calibrated (Fix 1) — Republican","hex":"#FFE0DC","L_star":91.6},
+          {"bracket":"30-40%","series":"OKLCH-calibrated (Fix 1) — Republican","hex":"#FFC3BC","L_star":83.9},
+          {"bracket":"40-50%","series":"OKLCH-calibrated (Fix 1) — Republican","hex":"#FFA49B","L_star":76.2},
+          {"bracket":"50-60%","series":"OKLCH-calibrated (Fix 1) — Republican","hex":"#FA8276","L_star":67.7},
+          {"bracket":"60-70%","series":"OKLCH-calibrated (Fix 1) — Republican","hex":"#EE5D50","L_star":58.6},
+          {"bracket":"70-80%","series":"OKLCH-calibrated (Fix 1) — Republican","hex":"#DC3629","L_star":49.5},
+          {"bracket":"80-90%","series":"OKLCH-calibrated (Fix 1) — Republican","hex":"#B91C12","L_star":39.9},
+          {"bracket":"90-100%","series":"OKLCH-calibrated (Fix 1) — Republican","hex":"#911108","L_star":30.5}
+        ];
+        var cs = getComputedStyle(document.documentElement);
+        function v(name) { return cs.getPropertyValue(name).trim(); }
+        var ink = v("--ink"), inkSoft = v("--ink-soft"), inkFaint = v("--ink-faint"), line = v("--line");
+        var narrow = window.innerWidth < 700;
+        var spec = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+          "title": "Perceptual lightness (CIELAB L*) by vote-share bracket",
+          "description": "Wikipedia Presidential palettes vs the OKLCH-calibrated Fix 1 ramps. L* recomputed from the hexes (sRGB, D65). The page itself uses the Fix 2 five-bin scale; Fix 1 is shown here because it preserves Wikipedia's 8-bracket structure, so the curves are directly comparable.",
+          "data": { "values": LSTAR },
+          "width": "container",
+          "height": 320,
+          "encoding": {
+            "x": {
+              "field": "bracket", "type": "ordinal", "title": "Winner's vote share",
+              "sort": ["20-30%","30-40%","40-50%","50-60%","60-70%","70-80%","80-90%","90-100%"]
+            },
+            "y": {
+              "field": "L_star", "type": "quantitative", "title": "CIELAB L* (lightness)",
+              "scale": { "domain": [15, 100] }
+            },
+            "color": {
+              "field": "series", "type": "nominal", "title": "Palette",
+              "scale": {
+                "domain": [
+                  "Wikipedia Presidential — Democratic",
+                  "Wikipedia Presidential — Republican",
+                  "OKLCH-calibrated (Fix 1) — Democratic",
+                  "OKLCH-calibrated (Fix 1) — Republican"
+                ],
+                "range": ["#1666CB", "#D40000", "#043A97", "#911108"]
+              },
+              "legend": { "orient": "bottom", "columns": narrow ? 1 : 2, "labelLimit": 0, "symbolSize": 90 }
+            },
+            "tooltip": [
+              { "field": "bracket" },
+              { "field": "series" },
+              { "field": "hex" },
+              { "field": "L_star", "title": "L*" }
+            ]
+          },
+          "layer": [
+            { "mark": { "type": "line", "point": true, "strokeWidth": 2 } },
+            {
+              "mark": { "type": "rule", "strokeDash": [4, 4], "color": "#888" },
+              "encoding": { "y": { "datum": 27.5 } }
+            },
+            {
+              "data": { "values": [
+                { "bracket": "20-30%", "L_star": 30.5, "label": "Fix 1 floor: L* 27.5" },
+                { "bracket": "70-80%", "L_star": 37.5, "label": "R stall: ΔL* −1.9" },
+                { "bracket": "90-100%", "L_star": 16.8, "label": "dark-tail collision: gap 3.9" }
+              ] },
+              "mark": { "type": "text", "fontSize": 11, "fontWeight": 600, "color": inkFaint },
+              "encoding": {
+                "x": { "field": "bracket", "type": "ordinal" },
+                "y": { "field": "L_star", "type": "quantitative" },
+                "text": { "field": "label" }
+              }
+            }
+          ],
+          "config": {
+            "background": "transparent",
+            "font": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+            "title": { "color": ink, "fontSize": 14, "anchor": "start" },
+            "axis": {
+              "labelColor": inkSoft, "titleColor": ink, "gridColor": line,
+              "domainColor": line, "tickColor": line, "labelFontSize": 11.5, "titleFontSize": 12
+            },
+            "legend": { "labelColor": inkSoft, "titleColor": ink, "labelFontSize": 12, "titleFontSize": 12 },
+            "view": { "stroke": null }
+          }
+        };
+        el.innerHTML = "";
+        vegaEmbed(el, spec, { "actions": false, "renderer": "svg" }).catch(function () {
+          el.innerHTML = '<p class="chart-wait">The L* trajectory chart could not be loaded; the figures it plots are given in the text above and below.</p>';
+        });
+      })();
     </script>
   </body>
 </html>
