@@ -1,0 +1,484 @@
+{
+ "inputs": {
+  "districts_csv_rows": 441,
+  "voting_districts": 435,
+  "excluded_delegates": [
+   "1198",
+   "6098",
+   "6698",
+   "6998",
+   "7298",
+   "7898"
+  ],
+  "geometry": "cd119_5m.geojson (2024 Cartographic Boundary Files 1:5,000,000, 119th Congress)",
+  "landmask": "states_5m.geojson, 48 CONUS states + DC unioned",
+  "projection": "EPSG:5070 (NAD83 / Conus Albers), km",
+  "population_voting": {
+   "min": 542112,
+   "max": 989948,
+   "mean": 760367,
+   "ratio_max_min": 1.83,
+   "total": 330759736
+  }
+ },
+ "centroid_cross_check_km": {
+  "all_435": {
+   "mean_km": 0.37835720231302533,
+   "median_km": 0.06699177904806433,
+   "max_km": 43.36660609448025,
+   "max_geoid": "0200",
+   "n_over_10km": 1
+  },
+  "conus_432": {
+   "mean_km": 0.2757057514425068,
+   "median_km": 0.066879890946582,
+   "max_km": 6.947763264777138,
+   "max_geoid": "1601",
+   "worst_5": [
+    [
+     "1601",
+     6.95
+    ],
+    [
+     "0603",
+     5.23
+    ],
+    [
+     "2707",
+     4.51
+    ],
+    [
+     "3001",
+     4.23
+    ],
+    [
+     "2601",
+     2.94
+    ]
+   ]
+  }
+ },
+ "grid": {
+  "method": "rectangular grid over CONUS Albers bbox; candidate cells = centres inside CONUS landmask; Hungarian assignment minimising total displacement",
+  "cell_size_km": 132.0,
+  "cell_size_rationale": "sqrt(CONUS land area / 432) = 134.4 km; 132 km is the nearest round size below that yielding >= 432 in-mask cells",
+  "land_area_km2": 7809227,
+  "cols": 35,
+  "rows_main": 22,
+  "grid_col_range": [
+   0,
+   34
+  ],
+  "grid_row_range_main": [
+   0,
+   21
+  ],
+  "total_grid_extent_incl_insets": {
+   "cols": 35,
+   "rows": 24,
+   "rows_note": "rows 0-21 main grid, row 22 blank separator, row 23 insets"
+  },
+  "candidate_cells_in_landmask": 446,
+  "cells_used_conus": 432,
+  "unused_candidate_cells": 14,
+  "unused_cells_col_row": [
+   [
+    4,
+    3
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    4,
+    5
+   ],
+   [
+    5,
+    3
+   ],
+   [
+    5,
+    4
+   ],
+   [
+    5,
+    5
+   ],
+   [
+    6,
+    1
+   ],
+   [
+    6,
+    2
+   ],
+   [
+    6,
+    4
+   ],
+   [
+    6,
+    5
+   ],
+   [
+    6,
+    6
+   ],
+   [
+    7,
+    1
+   ],
+   [
+    7,
+    3
+   ],
+   [
+    7,
+    4
+   ]
+  ],
+  "insets": {
+   "0200": {
+    "cell": [
+     2,
+     23
+    ],
+    "displacement_grid_units": 41.0
+   },
+   "1501": {
+    "cell": [
+     8,
+     23
+    ],
+    "displacement_grid_units": 39.6
+   },
+   "1502": {
+    "cell": [
+     9,
+     23
+    ],
+    "displacement_grid_units": 39.5
+   }
+  }
+ },
+ "completeness_from_csv": {
+  "rows": 435,
+  "unique_cells": 435,
+  "unique_geoids": 435,
+  "missing_geoids": [],
+  "duplicate_cells": []
+ },
+ "displacement_km_conus_linear_cost": {
+  "total": 284875,
+  "mean": 659.4,
+  "median": 425.9,
+  "p90": 1639.6,
+  "max": 3247.9,
+  "max_geoid": "3601",
+  "max_state_cd": "NY-01",
+  "n_over_1000km": 107,
+  "n_over_500km": 198,
+  "worst_10": [
+   [
+    "3601",
+    3247.9
+   ],
+   [
+    "4208",
+    2866.2
+   ],
+   [
+    "3411",
+    2807.8
+   ],
+   [
+    "3604",
+    2749.3
+   ],
+   [
+    "3609",
+    2701.6
+   ],
+   [
+    "3606",
+    2600.0
+   ],
+   [
+    "4216",
+    2563.5
+   ],
+   [
+    "3403",
+    2511.7
+   ],
+   [
+    "4210",
+    2438.7
+   ],
+   [
+    "3614",
+    2336.3
+   ]
+  ],
+  "worst_states_by_mean": [
+   [
+    "NY",
+    1527.6,
+    26
+   ],
+   [
+    "RI",
+    1422.3,
+    2
+   ],
+   [
+    "WI",
+    1335.8,
+    8
+   ],
+   [
+    "NJ",
+    1311.7,
+    12
+   ],
+   [
+    "MI",
+    1198.7,
+    13
+   ],
+   [
+    "OH",
+    1196.9,
+    15
+   ],
+   [
+    "PA",
+    1051.7,
+    17
+   ],
+   [
+    "CT",
+    1042.4,
+    5
+   ]
+  ]
+ },
+ "adjacency": {
+  "definition": "true = district polygons touch-or-intersect (incl. point touches), as in the states verify code; grid = 4-neighbour (orthogonal) cells",
+  "true_adjacencies_all_435": 1134,
+  "true_adjacencies_conus_432": 1133,
+  "true_adjacencies_shared_border_only_conus": 1129,
+  "true_adjacency_same_state": 818,
+  "grid_4neighbour_pairs_all_435": 778,
+  "preserved_4neighbour": 215,
+  "preserved_4neighbour_pct_of_conus_true": 19.0,
+  "lost_4neighbour": 919,
+  "false_4neighbour": 563,
+  "preserved_8neighbour_incl_diagonal": 339,
+  "preserved_8neighbour_pct": 29.9,
+  "preserved_shared_border_only_4neighbour": 214,
+  "preserved_shared_border_only_pct": 19.0,
+  "hi_inset_adjacency_preserved": true
+ },
+ "state_grouping": {
+  "metric_definition": "same_state_share = share of 4-neighbour grid pairs whose two districts are in the same state; contiguity = a state's tiles form one 4-connected component",
+  "grid_4neighbour_pairs_same_state": 339,
+  "grid_4neighbour_pairs_same_state_pct": 43.6,
+  "true_adjacencies_same_state_pct": 72.1,
+  "states_single_tile_or_single_component": 18,
+  "states_fragmented": [
+   [
+    "AL",
+    7,
+    4
+   ],
+   [
+    "AR",
+    4,
+    4
+   ],
+   [
+    "CA",
+    52,
+    3
+   ],
+   [
+    "CO",
+    8,
+    2
+   ],
+   [
+    "CT",
+    5,
+    4
+   ],
+   [
+    "FL",
+    28,
+    6
+   ],
+   [
+    "GA",
+    14,
+    3
+   ],
+   [
+    "IA",
+    4,
+    4
+   ],
+   [
+    "ID",
+    2,
+    2
+   ],
+   [
+    "IL",
+    17,
+    7
+   ],
+   [
+    "IN",
+    9,
+    5
+   ],
+   [
+    "KS",
+    4,
+    3
+   ],
+   [
+    "KY",
+    6,
+    4
+   ],
+   [
+    "LA",
+    6,
+    2
+   ],
+   [
+    "MA",
+    9,
+    5
+   ],
+   [
+    "MD",
+    8,
+    6
+   ],
+   [
+    "MI",
+    13,
+    6
+   ],
+   [
+    "MN",
+    8,
+    5
+   ],
+   [
+    "MO",
+    8,
+    4
+   ],
+   [
+    "MS",
+    4,
+    4
+   ],
+   [
+    "NC",
+    14,
+    3
+   ],
+   [
+    "NE",
+    3,
+    2
+   ],
+   [
+    "NJ",
+    12,
+    10
+   ],
+   [
+    "NV",
+    4,
+    4
+   ],
+   [
+    "NY",
+    26,
+    10
+   ],
+   [
+    "OH",
+    15,
+    10
+   ],
+   [
+    "OK",
+    5,
+    3
+   ],
+   [
+    "PA",
+    17,
+    8
+   ],
+   [
+    "RI",
+    2,
+    2
+   ],
+   [
+    "TN",
+    9,
+    5
+   ],
+   [
+    "VA",
+    11,
+    3
+   ],
+   [
+    "WI",
+    8,
+    4
+   ]
+  ],
+  "n_states_total": 50
+ },
+ "ordering_preserved_conus": {
+  "east_west": [
+   76045,
+   90263,
+   0.8425
+  ],
+  "north_south": [
+   84409,
+   87930,
+   0.96
+  ]
+ },
+ "sensitivity_squared_cost_same_grid": {
+  "objective": "minimise sum of SQUARED distances instead of sum of distances",
+  "total_displacement_km": 299700,
+  "mean_km": 693.7,
+  "median_km": 737.6,
+  "p90_km": 1086.6,
+  "max_km": 1338.3,
+  "max_geoid": "3625",
+  "preserved_4neighbour": 431,
+  "preserved_4neighbour_pct_of_conus_true": 38.0,
+  "false_4neighbour": 349,
+  "file": "tilegrid_districts_squared.csv"
+ },
+ "published_grid_source": {
+  "used": null,
+  "found_not_used": "Daily Kos congressional-district hexmap DKOS_CD_Hexmap_v1.1 (one hex per district), via Pitch Interactive tilegrams (https://raw.githubusercontent.com/PitchInteractiveInc/tilegrams/master/us-congressional-districts-2018.html) and tilegramsR (https://bhaskarvk.github.io/tilegramsR/). Hexagonal, not a square grid, and 2018 vintage (pre-2020 redistricting), so it cannot supply CD119 square-grid coordinates. This layout was computed from scratch from CD119 geometry."
+ }
+}

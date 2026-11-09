@@ -12,9 +12,9 @@ So the rendering approach has to be chosen per dataset — and this repo
 tests the three main paradigms side by side on the same authoritative
 data, so the trade-offs are visible rather than asserted.
 
-## The three pages
+## The pages
 
-All three are self-contained static pages in [`pages/`](pages/).
+All four are self-contained static pages in [`pages/`](pages/).
 Open one directly in a browser, or serve the repo root and visit it:
 
 ```sh
@@ -32,6 +32,7 @@ offline once loaded, apart from their Vega CDN scripts).
 | [`pages/zip-codes.html`](pages/zip-codes.html) | **US ZIP codes** — all 42,049 ZIP codes as 2 px squares under an Albers USA projection, coloured by the first digit of the ZIP code; hover shows ZIP, city, state, and county. Built from the Observable Vega-Lite API v6 notebook. |
 | [`pages/states-cartogram-test.html`](pages/states-cartogram-test.html) | **US states cartogram test** — the 50 states by 2020 Census population, three ways side by side with linked hovering: undistorted Albers USA reference map, Demers squares (area ∝ population), and an equal-tile grid mosaic (population in colour). Infotips, readout panel, and a square area-to-value legend. |
 | [`pages/states-contiguous-cartogram.html`](pages/states-contiguous-cartogram.html) | **Client-side contiguous diffusion cartogram** — the 50 states by population, computed live in the browser with go-cart-wasm (Gastner–Seguy–More flow-based method) in a Web Worker (~12 s), rendered with Vega-Lite geoshape beside the undistorted reference map. A verified precomputed reference is shown, clearly labelled, while the live run computes and as a toggleable comparison afterwards. |
+| [`pages/districts-cartogram-test.html`](pages/districts-cartogram-test.html) | **Districts cartogram test** — the 435 voting congressional districts (119th Congress) by 2020 Census population, four ways with linked hovering, tile-grid mosaic first: squared-cost tile grid, contiguous diffusion, Demers squares, and the undistorted reference map. The 6 delegate districts are excluded. |
 
 ## Data
 
@@ -72,7 +73,11 @@ Files in [`data/`](data/): `states.csv` (56 state-equivalents),
 plus the derived layouts: `demers_states.csv`, `tilegrid_states.csv`,
 `tilegrid_adjacency.json`, `layouts_verification.json`,
 `contiguous_states_2020_gocart.geojson`, and the per-state
-`error_table.csv` for the contiguous run.
+`error_table.csv` for the contiguous run — and for districts:
+`demers_districts.csv`, `tilegrid_districts.csv`,
+`tilegrid_districts_squared.csv`, `tilegrid_verification.json`,
+`contiguous_districts_2020_gocart.geojson`, and the per-district
+`districts_error_table.csv`.
 
 ## The three paradigms, and how to prioritise them
 
@@ -190,6 +195,41 @@ Worker, which is the point of that page.
   failed only at the CDN import, with a plain, accurate failure
   message. On a normal connection jsDelivr is reachable — the
   `+esm` module was fetched and its `locateFile` contract confirmed.
+
+### Districts test (`pages/districts-cartogram-test.html`)
+
+- **435 voting districts** (119th Congress), 2020 Census P1:
+  MT-01 542,112 to DE at-large 989,948, mean 760,367, ratio
+  **1.83×** — near-equal by design, so population-area at this scale
+  is almost uniform; a differentiated districts cartogram would need
+  a genuinely varying weight (votes cast, turnout, margin). The 6
+  delegate districts are excluded (DC 689,545; AS 49,710; GU 153,836;
+  MP 47,329; PR 3,285,874; VI 87,146). Full report:
+  [`docs/districts-readme.md`](docs/districts-readme.md).
+- **Tile-grid mosaic (lead view, squared-cost):** Hungarian
+  point-set matching onto a 35×22 grid (132 km cells), 435 unique
+  tiles. Max displacement 1,338 km (NY-25), zero districts over
+  2,000 km, adjacency preserved 431/1,134 (**38.0%**). The
+  linear-cost variant is worse (max 3,247.9 km, NY-01 by Montana;
+  adjacency 215/1,134, 19.0%) and is not the main view.
+- **Contiguous diffusion:** go-cart-wasm 0.5.0, EPSG:5070 pipeline,
+  `makeCartogram` **22.92 s**. Raw solver: mean absolute error
+  **0.018%**, worst TX-23 +0.92%, r = 0.999916, 1,134/1,134
+  adjacencies. Delivered file after repair: mean **0.084%**, worst
+  AZ-02 +6.33% (repair artefact, not solver error), r = 0.997132.
+  Repair cost at 435 regions: 99 self-intersecting geometries in the
+  raw output, repaired by nonzero-winding face selection (plain
+  `make_valid` was tried and rejected — it would have degraded mean
+  error to 0.155%). Rendered identity projection, `reflectY: true`,
+  not Albers USA; AK/HI are insets.
+- **Demers:** iterative overlap-removal baseline (FRC-style), **not**
+  TOP-W-St LP. Zero true overlaps, zero gap violations; sides
+  17.38–23.49 units, area ratio 1.826× = population ratio; mean
+  displacement 184.7 km, median 142.9 km, max 881.4 km (NJ-11);
+  ordering preserved 96.3% east–west, 92.3% north–south.
+- All four views render 435 district marks each; hovering one
+  district highlights it in all four views (verified headlessly,
+  pinned Vega 6.2.0 / Vega-Lite 6.4.0).
 
 ## Literature
 
