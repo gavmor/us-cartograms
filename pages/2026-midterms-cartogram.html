@@ -181,6 +181,21 @@
       #lstar-chart { width: 100%; margin: 6px 0 2px; }
       #lstar-chart .vega-embed { width: 100%; }
       #lstar-chart canvas, #lstar-chart svg { max-width: 100%; }
+      .dl-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 2px; }
+      .dl-btn {
+        appearance: none;
+        background: var(--chip-bg);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 4px 10px;
+        font: 600 12.5px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        color: var(--ink-soft);
+        cursor: pointer;
+      }
+      .dl-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--ink); }
+      .dl-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      .dl-btn:disabled { opacity: 0.45; cursor: default; }
+      .contig-block .dl-row { margin-bottom: 4px; }
 
       #tooltip {
         position: fixed;
@@ -254,12 +269,14 @@
         <p class="tally"><span class="d">Democrats 22</span> · <span class="r">Republicans 12</span>
           <span class="u">· 2 uncalled (AK, KS) · 14 states had no race</span></p>
         <div class="chart" id="chart-gov"></div>
+        <div class="dl-row"><button type="button" class="dl-btn" data-dl-target="chart-gov" data-dl-format="png" data-dl-name="2026-midterms-governors-demers">Download PNG</button><button type="button" class="dl-btn" data-dl-target="chart-gov" data-dl-format="svg" data-dl-name="2026-midterms-governors-demers">Download SVG</button></div>
         <div class="contig-block">
           <p class="viewnum">Contiguous diffusion · Governors</p>
           <p class="viewsub">The same 36 races, with the states keeping their shapes and borders:
             area is stretched until it matches each state&rsquo;s share of the 2020 Census
             population. Hovering here highlights the same state in the squares above.</p>
           <div class="chart" id="chart-gov-contig"><p class="chart-wait">Loading the contiguous cartogram&hellip;</p></div>
+          <div class="dl-row"><button type="button" class="dl-btn" data-dl-target="chart-gov-contig" data-dl-format="png" data-dl-name="2026-midterms-governors-contiguous" disabled>Download PNG</button><button type="button" class="dl-btn" data-dl-target="chart-gov-contig" data-dl-format="svg" data-dl-name="2026-midterms-governors-contiguous" disabled>Download SVG</button></div>
         </div>
         <div class="legend" data-legend="No governor&rsquo;s race in 2026"></div>
         <p class="note">The 14 grey states — DE, IN, KY, LA, MS, MO, MT, NJ, NC, ND, UT, VA, WA, WV —
@@ -283,12 +300,14 @@
         <p class="tally"><span class="d">Democrats 20</span> · <span class="r">Republicans 13</span>
           <span class="u">· 2 uncalled (AK, MS) · 15 states had no seat up</span></p>
         <div class="chart" id="chart-sen"></div>
+        <div class="dl-row"><button type="button" class="dl-btn" data-dl-target="chart-sen" data-dl-format="png" data-dl-name="2026-midterms-senate-demers">Download PNG</button><button type="button" class="dl-btn" data-dl-target="chart-sen" data-dl-format="svg" data-dl-name="2026-midterms-senate-demers">Download SVG</button></div>
         <div class="contig-block">
           <p class="viewnum">Contiguous diffusion · Senate</p>
           <p class="viewsub">The same 35 seats on the contiguous cartogram — states keep their
             shapes, area &prop; 2020 Census population, coloured only where a seat was contested.
             Hovering here highlights the same state in the squares above.</p>
           <div class="chart" id="chart-sen-contig"><p class="chart-wait">Loading the contiguous cartogram&hellip;</p></div>
+          <div class="dl-row"><button type="button" class="dl-btn" data-dl-target="chart-sen-contig" data-dl-format="png" data-dl-name="2026-midterms-senate-contiguous" disabled>Download PNG</button><button type="button" class="dl-btn" data-dl-target="chart-sen-contig" data-dl-format="svg" data-dl-name="2026-midterms-senate-contiguous" disabled>Download SVG</button></div>
         </div>
         <div class="legend" data-legend="No Senate seat up in 2026"></div>
         <p class="note">Florida&rsquo;s special election was the closest called Senate race:
@@ -311,6 +330,7 @@
         <p class="tally"><span class="d">Democrats 254</span> · <span class="r">Republicans 163</span>
           <span class="u">· 18 uncalled · popular vote D 55.7% / R 42.8%</span></p>
         <div class="chart" id="chart-house"></div>
+        <div class="dl-row"><button type="button" class="dl-btn" data-dl-target="chart-house" data-dl-format="png" data-dl-name="2026-midterms-house-tiles">Download PNG</button><button type="button" class="dl-btn" data-dl-target="chart-house" data-dl-format="svg" data-dl-name="2026-midterms-house-tiles">Download SVG</button></div>
         <div class="contig-block">
           <p class="viewnum">Contiguous diffusion · House</p>
           <p class="viewsub">The same 435 districts with their real shapes kept, area stretched to
@@ -318,6 +338,7 @@
             stays close to the undistorted shapes — what changes is the colour, not the size.
             Hovering here highlights the same district in the tiles above.</p>
           <div class="chart" id="chart-house-contig"><p class="chart-wait">Loading the contiguous cartogram&hellip;</p></div>
+          <div class="dl-row"><button type="button" class="dl-btn" data-dl-target="chart-house-contig" data-dl-format="png" data-dl-name="2026-midterms-house-contiguous" disabled>Download PNG</button><button type="button" class="dl-btn" data-dl-target="chart-house-contig" data-dl-format="svg" data-dl-name="2026-midterms-house-contiguous" disabled>Download SVG</button></div>
         </div>
         <div class="legend" data-legend="Runoff Dec 12 (LA-05, LA-06)"></div>
         <p class="note">435 voting districts only — the six non-voting delegates (DC, Puerto Rico,
@@ -378,6 +399,7 @@
           shape instead: even steps of &minus;7.0 to &minus;10.8 per bracket, and nothing below
           L* 27.5 (the dashed line).</p>
         <div id="lstar-chart"><p class="chart-wait">Loading the L* trajectory chart&hellip;</p></div>
+        <div class="dl-row"><button type="button" class="dl-btn" data-dl-target="lstar-chart" data-dl-format="png" data-dl-name="2026-midterms-lstar-trajectories" disabled>Download PNG</button><button type="button" class="dl-btn" data-dl-target="lstar-chart" data-dl-format="svg" data-dl-name="2026-midterms-lstar-trajectories" disabled>Download SVG</button></div>
         <p class="caption">Each dot is filled with the actual shade at that bracket, so the
           points themselves darken as the lines descend &mdash; pale at the light end,
           near-black at the dark end.</p>
@@ -1011,9 +1033,131 @@
           }
         };
         el.innerHTML = "";
-        vegaEmbed(el, spec, { "actions": false, "renderer": "svg" }).catch(function () {
+        vegaEmbed(el, spec, { "actions": false, "renderer": "svg" }).then(function (result) {
+          window.__lstarView = result.view;
+          if (window.__refreshDlButtons) window.__refreshDlButtons();
+        }).catch(function () {
           el.innerHTML = '<p class="chart-wait">The L* trajectory chart could not be loaded; the figures it plots are given in the text above and below.</p>';
         });
+      })();
+    </script>
+    <script>
+      (function () {
+        function downloadBlob(blob, filename) {
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+        }
+        function downloadUrl(url, filename) {
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }
+        function prepareSvg(containerId, scale) {
+          var container = document.getElementById(containerId);
+          if (!container) return null;
+          var svgEl = container.querySelector("svg");
+          if (!svgEl) return null;
+          var clone = svgEl.cloneNode(true);
+          clone.querySelectorAll(".hl, .pin").forEach(function (n) {
+            n.classList.remove("hl");
+            n.classList.remove("pin");
+          });
+          var vb = null;
+          try { vb = svgEl.viewBox && svgEl.viewBox.baseVal; } catch (e) { vb = null; }
+          var w = 980, h = 600, vx = 0, vy = 0;
+          if (vb && vb.width) { w = vb.width; h = vb.height; vx = vb.x; vy = vb.y; }
+          else { w = svgEl.clientWidth || 980; h = svgEl.clientHeight || 600; }
+          clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+          clone.setAttribute("width", Math.round(w * scale));
+          clone.setAttribute("height", Math.round(h * scale));
+          var cs = getComputedStyle(document.documentElement);
+          var panel = cs.getPropertyValue("--panel").trim() || "#fffdf8";
+          var shapeLine = cs.getPropertyValue("--shape-line").trim() || "rgba(28,36,48,0.4)";
+          var style = document.createElementNS("http://www.w3.org/2000/svg", "style");
+          style.textContent = "rect.shape,path.shape{stroke:" + shapeLine + ";stroke-width:0.4px}rect.tile{stroke-width:0.35px}text.lbl{font:600 11px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;text-anchor:middle;dominant-baseline:central}text.tilelbl{font:700 9px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke-width:2.5px}";
+          clone.insertBefore(style, clone.firstChild);
+          var bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          bg.setAttribute("x", vx);
+          bg.setAttribute("y", vy);
+          bg.setAttribute("width", w);
+          bg.setAttribute("height", h);
+          bg.setAttribute("fill", panel);
+          clone.insertBefore(bg, style.nextSibling);
+          var str = new XMLSerializer().serializeToString(clone);
+          if (str.indexOf("<?xml") !== 0) str = '<?xml version="1.0" encoding="UTF-8"?>\n' + str;
+          return { str: str, w: w, h: h };
+        }
+        function exportCustom(containerId, format, filename) {
+          if (format === "svg") {
+            var prepSvg = prepareSvg(containerId, 1);
+            if (!prepSvg) return;
+            downloadBlob(new Blob([prepSvg.str], { type: "image/svg+xml;charset=utf-8" }), filename);
+            return;
+          }
+          var prep = prepareSvg(containerId, 2);
+          if (!prep) return;
+          var blob = new Blob([prep.str], { type: "image/svg+xml;charset=utf-8" });
+          var url = URL.createObjectURL(blob);
+          var img = new Image();
+          img.onload = function () {
+            var canvas = document.createElement("canvas");
+            canvas.width = Math.round(prep.w * 2);
+            canvas.height = Math.round(prep.h * 2);
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            URL.revokeObjectURL(url);
+            if (canvas.toBlob) {
+              canvas.toBlob(function (b) { if (b) downloadBlob(b, filename); }, "image/png");
+            } else {
+              downloadUrl(canvas.toDataURL("image/png"), filename);
+            }
+          };
+          img.onerror = function () { URL.revokeObjectURL(url); };
+          img.src = url;
+        }
+        function refreshDlButtons() {
+          document.querySelectorAll(".dl-btn").forEach(function (btn) {
+            var target = btn.getAttribute("data-dl-target");
+            if (target === "lstar-chart") { btn.disabled = !window.__lstarView; return; }
+            var c = document.getElementById(target);
+            btn.disabled = !(c && c.querySelector("svg"));
+          });
+        }
+        window.__refreshDlButtons = refreshDlButtons;
+        document.querySelectorAll(".dl-btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var target = btn.getAttribute("data-dl-target");
+            var format = btn.getAttribute("data-dl-format");
+            var filename = btn.getAttribute("data-dl-name") + "." + format;
+            if (target === "lstar-chart" && window.__lstarView && typeof window.__lstarView.toImageURL === "function") {
+              var scale = format === "png" ? 2 : 1;
+              window.__lstarView.toImageURL(format, scale).then(function (url) {
+                downloadUrl(url, filename);
+              }).catch(function () {
+                exportCustom(target, format, filename);
+              });
+              return;
+            }
+            exportCustom(target, format, filename);
+          });
+        });
+        refreshDlButtons();
+        if (typeof MutationObserver !== "undefined") {
+          var observer = new MutationObserver(function () { refreshDlButtons(); });
+          ["chart-gov", "chart-sen", "chart-house", "chart-gov-contig", "chart-sen-contig", "chart-house-contig"].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) observer.observe(el, { childList: true, subtree: true });
+          });
+        }
       })();
     </script>
   </body>
