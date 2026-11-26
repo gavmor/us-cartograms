@@ -1086,6 +1086,7 @@
         var readout = document.getElementById("readout");
         var tooltip = document.getElementById("tooltip");
         var pinned = null;
+        var lastShown = null; /* district whose card the readout/tooltip last showed */
 
         function setHL(code, on) {
           document.querySelectorAll("[data-key='" + code + "']").forEach(function (n) {
@@ -1096,6 +1097,7 @@
           if (code) {
             document.querySelectorAll("[data-key]").forEach(function (n) { n.classList.remove("hl"); });
             setHL(code, true);
+            lastShown = code;
             readout.innerHTML = distHTML(code);
             if (window.__scatterView) {
               try { window.__scatterView.signal("hovered", code).run(); } catch (e) { /* scatter not ready */ }
@@ -1105,7 +1107,7 @@
             if (window.__scatterView) {
               try { window.__scatterView.signal("hovered", null).run(); } catch (e) { /* scatter not ready */ }
             }
-            if (pinned) readout.innerHTML = distHTML(pinned);
+            if (pinned) { lastShown = pinned; readout.innerHTML = distHTML(pinned); }
           }
         }
         function moveTip(e) {
@@ -1138,6 +1140,7 @@
           var code = t.getAttribute("data-key");
           document.querySelectorAll("[data-key]").forEach(function (n) { n.classList.remove("pin"); });
           pinned = code;
+          lastShown = code;
           t.classList.add("pin");
           readout.innerHTML = distHTML(code);
         }
@@ -1151,6 +1154,13 @@
           bins = computeBins(currentVar.id);
           buildTiles();
           renderScatter();
+          /* Re-render the sticky readout (and tooltip, if visible) for the last-shown
+             district: without this, going back from the cluster view leaves a stale
+             "District type" line on the card until the next hover. */
+          if (lastShown) {
+            readout.innerHTML = distHTML(lastShown);
+            if (tooltip.style.display === "block") tooltip.innerHTML = distHTML(lastShown);
+          }
           if (window.__refreshDlButtons) window.__refreshDlButtons();
         }
         var sel = document.getElementById("var-select");
