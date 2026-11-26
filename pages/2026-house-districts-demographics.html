@@ -256,6 +256,7 @@
       table.profile th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-faint); }
       table.profile td .dim { color: var(--ink-faint); font-size: 12px; }
       .cl-sw { display: inline-block; width: 14px; height: 14px; border: 0.4px solid var(--shape-line); border-radius: 2px; vertical-align: -2px; margin-right: 6px; }
+      .cl-name { font-size: 12.5px; color: var(--ink-soft); }
 
       #tooltip {
         position: fixed;
@@ -373,7 +374,7 @@
         <p class="viewsub">Group the 435 districts by their demographics — not by how they voted.
           The grouping runs live in your browser with e-means, a faster form of k-means:
           pick how many types to look for and which measures count, and the map above
-          recolours by type. Each type below is described by the measures where its
+          recolours by type. Each type below is named and described by the measures where its
           districts differ most from the average of all 435.</p>
         <div class="ctrl-row">
           <label for="cluster-k">Types to find</label>
@@ -450,7 +451,13 @@
             seed, so the same settings always give the same types. The four race and
             Hispanic-origin shares add to roughly 100%, so they move together; the
             grouping keeps all four, and the profiles should be read with that overlap
-            in mind. District types are descriptive: two districts in one type are
+            in mind. Each type also gets a plain-language name, generated from the two
+            measures where its districts differ most from the average (at least half a
+            standard deviation); a type with no measure that far from average is called
+            “Close to average”, and types that would otherwise share a name are told
+            apart by their next-most-different measure. The Type number stays with the
+            name, so a type can always be traced back. District types are descriptive:
+            two districts in one type are
             alike in demographics, which does not mean they vote alike. Vote columns
             in the profiles use called districts only.</li>
         </ul>
@@ -883,7 +890,9 @@
           var demoLine = "<b>" + currentVar.label + ":</b> " + fmtVal(v, currentVar.fmt) +
             " (" + fmtMoe(moe, currentVar.fmt) + " margin of error)";
           if (clusterView && clusterView.labels[code] != null) {
-            demoLine += "<br><b>District type:</b> Type " + (clusterView.labels[code] + 1) + " of " + clusterView.k;
+            var ci = clusterView.labels[code];
+            var nm = clusterView.names ? clusterView.names[ci] : null;
+            demoLine += "<br><b>District type:</b> " + (nm ? nm + " " : "") + "(Type " + (ci + 1) + " of " + clusterView.k + ")";
           }
           var elec;
           if (d.called) {
@@ -940,7 +949,8 @@
           if (clusterView) {
             lh = "<div class='row'><span class='lab'>District types — " + clusterView.k + " clusters, by demographics</span></div>";
             for (var ci = 0; ci < clusterView.k; ci++) {
-              lh += "<div class='row'><span class='grp'><span class='sw' style='background:" + CLUSTER_PALETTE[ci % CLUSTER_PALETTE.length] + "'></span><span>Type " + (ci + 1) + " · " + clusterView.sizes[ci] + " districts</span></span></div>";
+              var nm2 = clusterView.names ? clusterView.names[ci] : null;
+              lh += "<div class='row'><span class='grp'><span class='sw' style='background:" + CLUSTER_PALETTE[ci % CLUSTER_PALETTE.length] + "'></span><span>Type " + (ci + 1) + (nm2 ? " · " + nm2 : "") + " — " + clusterView.sizes[ci] + " districts</span></span></div>";
             }
             lh += "<div class='row'><span class='grp'><span style='display:inline-block;width:9px;height:9px;border-radius:50%;background:#fff;border:1px solid rgba(28,36,48,0.55)'></span><span>Seat flipped party in 2026</span></span></div>";
             document.getElementById("tiles-legend").innerHTML = lh;
@@ -1228,13 +1238,65 @@
           var s = (z >= 0 ? "+" : "−") + Math.abs(z).toFixed(1) + "σ";
           return s;
         }
+
+        /* Procedural type names: one factual descriptor per measure × direction.
+         * Names describe only what the measures show — no geography, no
+         * lifestyle, nothing the data does not contain. */
+        var NAME_TRAITS = {
+          median_income:     { hi: "affluent",                lo: "lower-income" },
+          pct_bachelors:     { hi: "highly educated",         lo: "fewer college graduates" },
+          pct_white_nh:      { hi: "mostly White",            lo: "lower White share" },
+          pct_black_nh:      { hi: "mostly Black",            lo: "lower Black share" },
+          pct_hispanic:      { hi: "heavily Hispanic",        lo: "lower Hispanic share" },
+          pct_asian_nh:      { hi: "heavily Asian",           lo: "lower Asian share" },
+          median_age:        { hi: "older",                   lo: "younger" },
+          pct_poverty:       { hi: "high-poverty",            lo: "low-poverty" },
+          pct_uninsured:     { hi: "highly uninsured",       lo: "mostly insured" },
+          pct_renter:        { hi: "renter-heavy",            lo: "owner-heavy" },
+          median_home_value: { hi: "expensive homes",         lo: "cheaper homes" },
+          pct_foreign_born:  { hi: "heavily immigrant",       lo: "few immigrants" }
+        };
+        function capName(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+        /* Name one cluster from its deviations (sorted by |z|, strongest first):
+         * the top two traits at least half a standard deviation from average.
+         * `count` is how many traits to use; 0 traits -> "Close to average". */
+        function nameFromDevs(devs, count) {
+          var traits = devs.filter(function (dv) { return Math.abs(dv.z) >= 0.5; }).slice(0, count);
+          if (!traits.length) return "Close to average";
+          return capName(traits.map(function (dv) {
+            return NAME_TRAITS[dv.id][dv.z >= 0 ? "hi" : "lo"];
+          }).join(", "));
+        }
+        /* Name all clusters; if two would share a name, extend the colliding
+         * names with their next-strongest qualifying trait until they differ.
+         * A cluster that runs out of qualifying traits keeps its name and the
+         * Type number disambiguates it in display. */
+        function nameProfiles(profiles) {
+          var counts = profiles.map(function () { return 2; });
+          var names = profiles.map(function (p, i) { return nameFromDevs(p.devs, counts[i]); });
+          var changed = true, guard = 0;
+          while (changed && guard++ < 12) {
+            changed = false;
+            var seen = {};
+            names.forEach(function (nm, i) {
+              if (seen[nm] !== undefined) {
+                [seen[nm], i].forEach(function (j) {
+                  var avail = profiles[j].devs.filter(function (dv) { return Math.abs(dv.z) >= 0.5; }).length;
+                  if (counts[j] < avail) { counts[j]++; names[j] = nameFromDevs(profiles[j].devs, counts[j]); changed = true; }
+                });
+              } else seen[nm] = i;
+            });
+          }
+          return names;
+        }
+
         function profileTable(profiles, k) {
           var h = "<table class='profile'><thead><tr><th>Type</th><th>Districts</th><th>Most different from the average</th><th>Mean Democratic share</th><th>Mean margin</th><th>Flipped</th></tr></thead><tbody>";
           profiles.forEach(function (p) {
-            var devs = p.devs.map(function (dv) {
+            var devs = p.devs.slice(0, 3).map(function (dv) {
               return dv.short + " " + fmtSigma(dv.z);
             }).join(" · ");
-            h += "<tr><td><span class='cl-sw' style='background:" + PALETTE[p.idx] + "'></span>Type " + (p.idx + 1) + "</td>" +
+            h += "<tr><td><span class='cl-sw' style='background:" + PALETTE[p.idx] + "'></span>Type " + (p.idx + 1) + "<br><span class='cl-name'>" + p.name + "</span></td>" +
               "<td>" + p.n + "</td><td>" + devs + "</td>" +
               "<td>" + (p.demN ? p.demMean.toFixed(1) + "% <span class='dim'>(n=" + p.demN + ")</span>" : "—") + "</td>" +
               "<td>" + (p.marN ? p.marMean.toFixed(1) + " pts <span class='dim'>(n=" + p.marN + ")</span>" : "—") + "</td>" +
@@ -1280,7 +1342,7 @@
             var devs = [];
             for (var t2 = 0; t2 < d; t2++) {
               var v = H.VARS.filter(function (x) { return x.id === varIds[t2]; })[0];
-              devs.push({ short: v.short, z: centroids[c][t2] });
+              devs.push({ id: varIds[t2], short: v.short, z: centroids[c][t2] });
             }
             devs.sort(function (a, b) { return Math.abs(b.z) - Math.abs(a.z); });
             var demSum = 0, demN = 0, marSum = 0, marN = 0, flips = 0, calledN = 0;
@@ -1294,17 +1356,20 @@
             });
             profiles.push({
               idx: c, n: members.length,
-              devs: devs.slice(0, 3),
+              devs: devs, /* full |z|-sorted list; table shows the top 3, names use the top qualifying traits */
               demMean: demN ? demSum / demN : null, demN: demN,
               marMean: marN ? marSum / marN : null, marN: marN,
               flips: flips, calledN: calledN
             });
           }
+          /* Procedural names, generated from each type's most different measures. */
+          var names = nameProfiles(profiles);
+          profiles.forEach(function (p, i) { p.name = names[i]; });
           state.active = true; state.k = k; state.varIds = varIds;
-          state.labels = labels; state.centroids = centroids;
+          state.labels = labels; state.centroids = centroids; state.names = names;
           state.means = means; state.sds = sds; state.profiles = profiles;
           state.loss = res.loss; state.ms = Math.round(t1 - t0); state.splits = res.splits;
-          window.__tilesSetCluster({ k: k, labels: labels, sizes: counts.slice().sort(function (a, b) { return b - a; }) });
+          window.__tilesSetCluster({ k: k, labels: labels, sizes: counts.slice().sort(function (a, b) { return b - a; }), names: names });
           profilesEl.innerHTML = profileTable(profiles, k);
           backBtn.disabled = false;
           statusEl.textContent = "Grouped " + n + " districts into " + k + " types in " + state.ms + " ms " +
@@ -1315,7 +1380,7 @@
         }
 
         function clearClustering() {
-          state.active = false; state.labels = null; state.profiles = null;
+          state.active = false; state.labels = null; state.profiles = null; state.names = null;
           profilesEl.innerHTML = "";
           backBtn.disabled = true;
           statusEl.textContent = "Back to the variable map. Pick your types and measures, then press “Find district types” to cluster again.";
