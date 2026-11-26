@@ -3,29 +3,86 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>US Cartograms in Vega-Lite</title>
+<title>US Cartograms — maps drawn by people, not land</title>
 <style>
-  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; max-width: 760px; margin: 2.5rem auto; padding: 0 1.25rem; line-height: 1.55; color: #1a1a1a; }
-  h1 { font-size: 1.7rem; margin-bottom: 0.25rem; }
-  p.lede { color: #444; }
-  ul { padding-left: 1.25rem; }
-  li { margin: 1rem 0; }
-  a { color: #0b5fff; }
+  :root { --ink: #1a1a1a; --muted: #555; --line: #ddd; --accent: #c2410c; }
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; max-width: 880px; margin: 0 auto; padding: 2.5rem 1.25rem 3rem; line-height: 1.55; color: var(--ink); }
+  header { margin-bottom: 2rem; }
+  h1 { font-size: 1.9rem; margin: 0 0 0.35rem; line-height: 1.2; }
+  p.lede { color: var(--muted); font-size: 1.05rem; margin: 0; max-width: 640px; }
+  .strip { display: flex; gap: 3px; margin: 1.25rem 0 0; }
+  .strip i { display: block; width: 18px; height: 18px; border-radius: 2px; }
+  h2 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--line); padding-bottom: 0.35rem; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+  .card { border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem 1.05rem; background: #fff; border-top: 4px solid var(--bar, #86c05e); }
+  .card:hover { border-color: #bbb; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
+  .card h3 { margin: 0 0 0.35rem; font-size: 1.1rem; line-height: 1.3; }
+  .card h3 a { color: var(--ink); text-decoration: none; }
+  .card h3 a:hover { color: var(--accent); text-decoration: underline; }
+  .card p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .card .meta { margin-top: 0.55rem; font-size: 0.85rem; color: #777; }
+  .badge { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #fff; background: var(--accent); border-radius: 999px; padding: 0.1em 0.55em; margin-left: 0.4em; vertical-align: 0.1em; }
+  footer { margin-top: 2.75rem; color: #666; font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+  footer a { color: #0b5fff; }
   code { background: #f2f2f2; padding: 0.1em 0.3em; border-radius: 3px; }
-  footer { margin-top: 2.5rem; color: #666; font-size: 0.9rem; }
 </style>
 </head>
 <body>
-<h1>US Cartograms in Vega-Lite</h1>
-<p class="lede">Contiguous, Demers, and tile-grid cartograms of the United States, from 2020 Census data — plus a ZIP-code dot map from the Vega-Lite API notebook.</p>
-<ul>
-  <li><a href="zip-codes.html">US ZIP codes</a> — all 42,049 ZIP codes as 2px squares under Albers USA, coloured by first digit of ZIP. From the Observable Vega-Lite API v6 notebook.</li>
-  <li><a href="states-cartogram-test.html">States cartogram test</a> — 50 states by 2020 Census population (CA 39,538,223 to WY 576,851, 68.5×): undistorted reference map, Demers squares, and an equal-tile grid mosaic, with linked hovering.</li>
-  <li><a href="states-contiguous-cartogram.html">States contiguous cartogram, client-side</a> — flow-based diffusion (Gastner, Seguy &amp; More 2018) via go-cart-wasm 0.5.0 in a Web Worker, computing live in the browser (~12 s). Mean cartographic error 0.021%, worst Alaska +0.95%, 107/107 adjacencies preserved.</li>
-  <li><a href="districts-cartogram-test.html">Districts cartogram test</a> — 435 voting congressional districts (119th Congress) by 2020 Census population: tile-grid mosaic (squared-cost lead), contiguous diffusion, Demers squares, and reference map, with linked hovering.</li>
-  <li><a href="2026-midterms-cartogram.html">2026 midterm results</a> — governors, Senate, and House by party, winners shaded by margin (as of Nov 8, 2026; 23 races still uncalled).</li>
-</ul>
-<p>Data: 2024 Cartographic Boundary Files (1:5,000,000) and 2020 Census P1 resident population. Source, data, layouts, and reproduction scripts: <a href="https://github.com/gavmor/us-cartograms">gavmor/us-cartograms</a>.</p>
-<footer>Deployed by GitHub Actions on every push to <code>main</code>.</footer>
+<header>
+  <h1>US Cartograms</h1>
+  <p class="lede">Maps of the United States drawn by people, not land — every state and every House district sized by who lives there, not how much ground it covers.</p>
+  <div class="strip" aria-hidden="true">
+    <i style="background:#d9ead3"></i><i style="background:#c4e0a8"></i><i style="background:#a9d67e"></i><i style="background:#8ccb5e"></i><i style="background:#6fb84a"></i><i style="background:#8fb84e"></i><i style="background:#b3bd52"></i><i style="background:#d2b058"></i><i style="background:#e0a93e"></i><i style="background:#e89a2e"></i><i style="background:#e87f1f"></i><i style="background:#dd6415"></i><i style="background:#c94f0e"></i><i style="background:#a63d08"></i>
+  </div>
+</header>
+
+<h2>By population</h2>
+<div class="grid">
+  <div class="card" style="--bar:#6fb84a">
+    <h3><a href="states-cartogram-test.html">States by population</a></h3>
+    <p>Three ways to draw the 50 states so each one&rsquo;s size matches its people: an undistorted reference map, Demers squares, and an equal-tile grid, with linked hovering.</p>
+    <p class="meta">California 39,538,223 &rarr; Wyoming 576,851 — a 68.5&times; range.</p>
+  </div>
+  <div class="card" style="--bar:#a9d67e">
+    <h3><a href="states-contiguous-cartogram.html">States, stretched to fit their people</a></h3>
+    <p>The contiguous diffusion cartogram — state borders flow until every state&rsquo;s area equals its population — computed live in your browser.</p>
+    <p class="meta">Mean error 0.021%; all 107 state adjacencies preserved.</p>
+  </div>
+  <div class="card" style="--bar:#d2b058">
+    <h3><a href="districts-cartogram-test.html">Congressional districts by population</a></h3>
+    <p>All 435 voting House districts (119th Congress), four ways: tile-grid mosaic, contiguous diffusion, Demers squares, and a reference map.</p>
+    <p class="meta">Districts run only 1.83&times; from smallest to largest — nearly equal by design.</p>
+  </div>
+</div>
+
+<h2>The 2026 election</h2>
+<div class="grid">
+  <div class="card" style="--bar:#e87f1f">
+    <h3><a href="2026-midterms-cartogram.html">2026 midterm results</a></h3>
+    <p>Who won every governor, Senate, and House race, shaded by how big the win was. Flips marked with a white dot.</p>
+    <p class="meta">House D 259 / R 173, 3 races still uncalled, as of Nov 25, 2026. Snapshot Nov 8.</p>
+  </div>
+  <div class="card" style="--bar:#c94f0e">
+    <h3><a href="2026-house-districts-demographics.html">Who lives in each House district</a><span class="badge">New</span></h3>
+    <p>The 435 districts by income, education, race and ethnicity, age, poverty, health insurance, housing, and where people were born — with the 2026 result on every district.</p>
+    <p class="meta">ACS 2024 1-year estimates; each variable plotted against the Democratic vote share.</p>
+  </div>
+</div>
+
+<h2>Everything at once</h2>
+<div class="grid">
+  <div class="card" style="--bar:#8ccb5e">
+    <h3><a href="zip-codes.html">US ZIP codes</a></h3>
+    <p>All 42,049 ZIP codes as tiny squares under an Albers USA map, coloured by the first digit of the ZIP code.</p>
+    <p class="meta">From the Observable Vega-Lite API notebook.</p>
+  </div>
+</div>
+
+<footer>
+  <p>Data: 2020 Census P1 resident population and 2024 Cartographic Boundary Files (1:5,000,000); 2026 election results from Wikipedia, the AP, Ballotpedia, and Poliwave (snapshot Nov 8, 2026); demographics from the American Community Survey 2024 1-year estimates. Source, data, layouts, and reproduction scripts: <a href="https://github.com/gavmor/us-cartograms">gavmor/us-cartograms</a>.</p>
+  <p>Deployed by GitHub Actions on every push to <code>main</code>.</p>
+</footer>
 </body>
 </html>
