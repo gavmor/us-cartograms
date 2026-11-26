@@ -742,50 +742,243 @@
           a.click();
           a.remove();
         }
-        function prepareSvg(containerId, scale) {
+        var SVGNS = "http://www.w3.org/2000/svg";
+        var FIG_FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif";
+        function escXml(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+        function elNS(tag, attrs) {
+          var e = document.createElementNS(SVGNS, tag);
+          for (var k in attrs) e.setAttribute(k, attrs[k]);
+          return e;
+        }
+        function textW(s, px) { return String(s).length * px * 0.52; }
+        function wrapLines(s, maxChars) {
+          var words = String(s).split(/\s+/), lines = [], cur = "";
+          words.forEach(function (w) {
+            if (!cur) cur = w;
+            else if ((cur + " " + w).length <= maxChars) cur += " " + w;
+            else { lines.push(cur); cur = w; }
+          });
+          if (cur) lines.push(cur);
+          return lines;
+        }
+        function swColor(sw) {
+          if (!sw) return "#cccccc";
+          var st = sw.getAttribute("style") || "";
+          var m = st.match(/background\s*:\s*([^;]+)/);
+          if (m) return m[1].trim();
+          var cs = getComputedStyle(document.documentElement);
+          if (sw.classList.contains("unc")) return (cs.getPropertyValue("--uncalled") || "").trim() || "#c2c7cf";
+          if (sw.classList.contains("nor")) return (cs.getPropertyValue("--norace") || "").trim() || "#e7e3d8";
+          return "#cccccc";
+        }
+        function isDot(sw) {
+          if (!sw) return false;
+          var st = sw.getAttribute("style") || "";
+          return /border-radius\s*:\s*50%/.test(st);
+        }
+        /* Parse a page legend <div class="legend"> into rows for SVG rendering. */
+        function parseLegend(legendEl) {
+          var rows = [];
+          if (!legendEl) return { rows: rows };
+          legendEl.querySelectorAll(".row").forEach(function (row) {
+            var bins = row.querySelector(".bins");
+            if (bins) {
+              var lab = row.querySelector(".lab");
+              var items = [];
+              bins.querySelectorAll(".bin").forEach(function (b) {
+                var sw = b.querySelector(".sw");
+                var bl = b.querySelector(".bl");
+                items.push({ color: swColor(sw), label: bl ? bl.textContent : "" });
+              });
+              rows.push({ kind: "bins", label: lab ? lab.textContent : "", items: items });
+              return;
+            }
+            var grps = row.querySelectorAll(".grp");
+            if (grps.length) {
+              var gitems = [];
+              grps.forEach(function (g) {
+                var sw = g.querySelector("span");
+                gitems.push({ dot: isDot(sw), dashed: !!(sw && sw.classList.contains("unc")), color: swColor(sw), text: g.textContent.trim() });
+              });
+              rows.push({ kind: "grp", items: gitems });
+              return;
+            }
+            var lab2 = row.querySelector(".lab");
+            if (lab2) rows.push({ kind: "label", text: lab2.textContent });
+          });
+          return { rows: rows };
+        }
+        /* Render parsed legend rows into an SVG <g>; returns {node, width, height}. */
+        function legendGroup(legend, ink, inkSoft, shapeLine) {
+          var g = elNS("g", {});
+          var y = 0, maxW = 0;
+          legend.rows.forEach(function (row) {
+            if (row.kind === "label") {
+              var t = elNS("text", { x: 0, y: y + 12, "font-size": 12, "font-weight": 700, fill: ink, "font-family": FIG_FONT });
+              t.textContent = row.text; g.appendChild(t);
+              maxW = Math.max(maxW, textW(row.text, 12)); y += 22;
+            } else if (row.kind === "bins") {
+              var x = 0;
+              if (row.label) {
+                var lt = elNS("text", { x: 0, y: y + 12, "font-size": 12, "font-weight": 700, fill: ink, "font-family": FIG_FONT });
+                lt.textContent = row.label; g.appendChild(lt);
+                x = textW(row.label, 12) + 10;
+              }
+              row.items.forEach(function (it) {
+                var bw = Math.max(30, textW(it.label, 11) + 4);
+                g.appendChild(elNS("rect", { x: x, y: y, width: 26, height: 15, fill: it.color, stroke: shapeLine, "stroke-width": 0.4 }));
+                var bl = elNS("text", { x: x + 13, y: y + 27, "font-size": 11, fill: inkSoft, "text-anchor": "middle", "font-family": FIG_FONT });
+                bl.textContent = it.label; g.appendChild(bl);
+                x += bw + 6;
+              });
+              maxW = Math.max(maxW, x); y += 41;
+            } else if (row.kind === "grp") {
+              var x2 = 0;
+              row.items.forEach(function (it) {
+                if (it.dot) {
+                  g.appendChild(elNS("circle", { cx: x2 + 5, cy: y + 8, r: 4.5, fill: "#ffffff", stroke: "rgba(28,36,48,0.55)", "stroke-width": 1 }));
+                } else {
+                  var r = elNS("rect", { x: x2, y: y, width: 15, height: 15, fill: it.color, stroke: shapeLine, "stroke-width": it.dashed ? 1 : 0.4 });
+                  if (it.dashed) r.setAttribute("stroke-dasharray", "3,2");
+                  g.appendChild(r);
+                }
+                var tx = elNS("text", { x: x2 + 20, y: y + 12, "font-size": 12, fill: inkSoft, "font-family": FIG_FONT });
+                tx.textContent = it.text; g.appendChild(tx);
+                x2 += 20 + textW(it.text, 12) + 16;
+              });
+              maxW = Math.max(maxW, x2); y += 24;
+            }
+          });
+          return { node: g, width: maxW, height: y };
+        }
+        var DEMO_PROV = "Demographics: American Community Survey 2025 1-year estimates (Census Bureau, published 29 Oct 2026). 2026 House results as of 25 Nov 2026. gavmor.com/us-cartograms";
+        /* Per-chart figure metadata: title (live DOM), legend source, provenance. */
+        function figureMeta(containerId) {
+          if (containerId === "chart-tiles") {
+            return {
+              title: function () { var t = document.getElementById("tiles-title"); return t ? t.textContent.trim() : ""; },
+              legend: function () { return parseLegend(document.getElementById("tiles-legend")); },
+              provenance: function () { return DEMO_PROV; }
+            };
+          }
+          if (containerId === "scatter-chart") {
+            return {
+              title: function () { var t = document.getElementById("scatter-title"); return t ? t.textContent.trim() : ""; },
+              legend: null,
+              extraLegend: function () { return [{ dot: true, dashed: false, color: "#ffffff", text: "Seat flipped party in 2026" }]; },
+              provenance: function () {
+                var c = document.getElementById("scatter-caption");
+                var cap = c ? c.textContent.replace(/\s+/g, " ").trim() : "";
+                return DEMO_PROV + (cap ? " " + cap : "");
+              }
+            };
+          }
+          return null;
+        }
+        function chartDims(svgEl) {
+          var vb = null;
+          try { vb = svgEl.viewBox && svgEl.viewBox.baseVal; } catch (e) { vb = null; }
+          var w, h, vx = 0, vy = 0;
+          if (vb && vb.width) { w = vb.width; h = vb.height; vx = vb.x; vy = vb.y; }
+          else {
+            w = parseFloat(svgEl.getAttribute("width")) || svgEl.clientWidth || 980;
+            h = parseFloat(svgEl.getAttribute("height")) || svgEl.clientHeight || 600;
+          }
+          return { w: w, h: h, vx: vx, vy: vy, hasVb: !!(vb && vb.width) };
+        }
+        /* Compose the chart SVG into a publication-ready figure: title above,
+           legend below, provenance fine print last. Returns {str, w, h} at
+           unscaled figure size; the caller scales via width/height attrs. */
+        function prepareFigure(containerId, scale) {
           var container = document.getElementById(containerId);
           if (!container) return null;
           var svgEl = container.querySelector("svg");
           if (!svgEl) return null;
+          var meta = figureMeta(containerId);
+          if (!meta) return null;
           var clone = svgEl.cloneNode(true);
           clone.querySelectorAll(".hl, .pin").forEach(function (n) {
             n.classList.remove("hl");
             n.classList.remove("pin");
           });
-          var vb = null;
-          try { vb = svgEl.viewBox && svgEl.viewBox.baseVal; } catch (e) { vb = null; }
-          var w = 980, h = 600, vx = 0, vy = 0;
-          if (vb && vb.width) { w = vb.width; h = vb.height; vx = vb.x; vy = vb.y; }
-          else { w = svgEl.clientWidth || 980; h = svgEl.clientHeight || 600; }
-          clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-          clone.setAttribute("width", Math.round(w * scale));
-          clone.setAttribute("height", Math.round(h * scale));
+          var d = chartDims(svgEl);
           var cs = getComputedStyle(document.documentElement);
-          var panel = cs.getPropertyValue("--panel").trim() || "#fffdf8";
-          var shapeLine = cs.getPropertyValue("--shape-line").trim() || "rgba(28,36,48,0.4)";
-          var style = document.createElementNS("http://www.w3.org/2000/svg", "style");
-          style.textContent = "rect.shape,path.shape{stroke:" + shapeLine + ";stroke-width:0.4px}rect.tile{stroke-width:0.35px}text.lbl{font:600 11px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;text-anchor:middle;dominant-baseline:central}text.tilelbl{font:700 9px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke-width:2.5px}";
+          var panel = (cs.getPropertyValue("--panel") || "").trim() || "#fffdf8";
+          var ink = (cs.getPropertyValue("--ink") || "").trim() || "#1c2430";
+          var inkSoft = (cs.getPropertyValue("--ink-soft") || "").trim() || "#4a5568";
+          var inkFaint = (cs.getPropertyValue("--ink-faint") || "").trim() || "#6b7280";
+          var shapeLine = (cs.getPropertyValue("--shape-line") || "").trim() || "rgba(28,36,48,0.4)";
+          clone.setAttribute("xmlns", SVGNS);
+          var style = document.createElementNS(SVGNS, "style");
+          style.textContent = "rect.shape,path.shape{stroke:" + shapeLine + ";stroke-width:0.4px}rect.tile{stroke-width:0.35px}text.lbl{font:600 11px " + FIG_FONT + ";text-anchor:middle;dominant-baseline:central}text.tilelbl{font:700 9px " + FIG_FONT + ";text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke-width:2.5px}";
           clone.insertBefore(style, clone.firstChild);
-          var bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-          bg.setAttribute("x", vx);
-          bg.setAttribute("y", vy);
-          bg.setAttribute("width", w);
-          bg.setAttribute("height", h);
+          var bg = document.createElementNS(SVGNS, "rect");
+          bg.setAttribute("x", d.vx);
+          bg.setAttribute("y", d.vy);
+          bg.setAttribute("width", d.w);
+          bg.setAttribute("height", d.h);
           bg.setAttribute("fill", panel);
           clone.insertBefore(bg, style.nextSibling);
-          var str = new XMLSerializer().serializeToString(clone);
-          if (str.indexOf("<?xml") !== 0) str = '<?xml version="1.0" encoding="UTF-8"?>\n' + str;
-          return { str: str, w: w, h: h };
-        }
-        function exportCustom(containerId, format, filename) {
-          if (format === "svg") {
-            var prepSvg = prepareSvg(containerId, 1);
-            if (!prepSvg) return;
-            downloadBlob(new Blob([prepSvg.str], { type: "image/svg+xml;charset=utf-8" }), filename);
-            return;
+          var pad = 24;
+          var title = meta.title ? meta.title() : null;
+          var titleLines = title ? wrapLines(title, Math.max(10, Math.floor(d.w / (18 * 0.55)))) : [];
+          var titleH = title ? titleLines.length * 22 + 12 : 0;
+          var chartTop = pad + titleH;
+          var leg = meta.legend ? meta.legend() : null;
+          var legG = null, legH = 0;
+          if (leg && leg.rows.length) { legG = legendGroup(leg, ink, inkSoft, shapeLine); legH = legG.height; }
+          var extra = meta.extraLegend ? meta.extraLegend() : null;
+          var extraG = null, extraH = 0;
+          if (extra) { extraG = legendGroup({ rows: [{ kind: "grp", items: extra }] }, ink, inkSoft, shapeLine); extraH = extraG.height; }
+          var prov = meta.provenance ? meta.provenance() : "";
+          var provChars = Math.max(40, Math.floor((d.w) / 5.8));
+          var provLines = wrapLines(prov, provChars);
+          var provH = provLines.length * 14;
+          var W = Math.round(d.w + pad * 2);
+          var H = Math.round(chartTop + d.h + (legH ? 16 + legH : 0) + (extraH ? 10 + extraH : 0) + 12 + provH + pad);
+          var fig = elNS("svg", { xmlns: SVGNS, width: Math.round(W * scale), height: Math.round(H * scale), viewBox: "0 0 " + W + " " + H });
+          fig.appendChild(elNS("rect", { x: 0, y: 0, width: W, height: H, fill: panel }));
+          titleLines.forEach(function (ln, i) {
+            var tt = elNS("text", { x: pad, y: pad + 18 + i * 22, "font-size": 18, "font-weight": 700, fill: ink, "font-family": FIG_FONT });
+            tt.textContent = ln; fig.appendChild(tt);
+          });
+          clone.setAttribute("x", pad);
+          clone.setAttribute("y", chartTop);
+          clone.setAttribute("width", d.w);
+          clone.setAttribute("height", d.h);
+          if (d.hasVb) clone.setAttribute("viewBox", d.vx + " " + d.vy + " " + d.w + " " + d.h);
+          else clone.removeAttribute("viewBox");
+          fig.appendChild(clone);
+          var ly = chartTop + d.h + 16;
+          if (legG) {
+            var lwrap = elNS("g", { transform: "translate(" + pad + "," + ly + ")" + (legG.width > d.w ? " scale(" + (d.w / legG.width).toFixed(3) + ")" : "") });
+            lwrap.appendChild(legG.node); fig.appendChild(lwrap);
+            ly += legH;
           }
-          var prep = prepareSvg(containerId, 2);
-          if (!prep) return;
+          if (extraG) {
+            var ew = elNS("g", { transform: "translate(" + pad + "," + (ly + 10) + ")" });
+            ew.appendChild(extraG.node); fig.appendChild(ew);
+            ly += 10 + extraH;
+          }
+          var py = ly + 12;
+          provLines.forEach(function (ln, i) {
+            var pt = elNS("text", { x: pad, y: py + i * 14 + 11, "font-size": 11, fill: inkFaint, "font-family": FIG_FONT });
+            pt.textContent = ln; fig.appendChild(pt);
+          });
+          var str = new XMLSerializer().serializeToString(fig);
+          if (str.indexOf("<?xml") !== 0) str = '<?xml version="1.0" encoding="UTF-8"?>\n' + str;
+          return { str: str, w: W, h: H };
+        }
+        window.__prepareFigure = prepareFigure;
+        function exportFigure(containerId, format, filename) {
+          if (format === "svg") {
+            var prepSvg = prepareFigure(containerId, 1);
+            if (!prepSvg) return false;
+            downloadBlob(new Blob([prepSvg.str], { type: "image/svg+xml;charset=utf-8" }), filename);
+            return true;
+          }
+          var prep = prepareFigure(containerId, 2);
+          if (!prep) return false;
           var blob = new Blob([prep.str], { type: "image/svg+xml;charset=utf-8" });
           var url = URL.createObjectURL(blob);
           var img = new Image();
@@ -804,6 +997,7 @@
           };
           img.onerror = function () { URL.revokeObjectURL(url); };
           img.src = url;
+          return true;
         }
         function refreshDlButtons() {
           document.querySelectorAll(".dl-btn").forEach(function (btn) {
@@ -819,16 +1013,14 @@
             var target = btn.getAttribute("data-dl-target");
             var format = btn.getAttribute("data-dl-format");
             var filename = btn.getAttribute("data-dl-name") + "." + format;
-            if (target === "scatter-chart" && window.__scatterView && typeof window.__scatterView.toImageURL === "function") {
+            if (exportFigure(target, format, filename)) return;
+            var view = target === "scatter-chart" ? window.__scatterView : null;
+            if (view && typeof view.toImageURL === "function") {
               var scale = format === "png" ? 2 : 1;
-              window.__scatterView.toImageURL(format, scale).then(function (url) {
+              view.toImageURL(format, scale).then(function (url) {
                 downloadUrl(url, filename);
-              }).catch(function () {
-                exportCustom(target, format, filename);
-              });
-              return;
+              }).catch(function () {});
             }
-            exportCustom(target, format, filename);
           });
         });
         refreshDlButtons();
